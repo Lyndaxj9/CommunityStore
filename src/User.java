@@ -1,6 +1,7 @@
 package store;
 
 import java.util.Scanner;
+import java.sql.*;
 
 // maybe change the class to Store or have a separate Store class for something like BROWSE
 public class User {
@@ -12,6 +13,11 @@ public class User {
 	private int user_id;
 	public static final int PWTRIES = 2;
 	Scanner input = new Scanner(System.in);
+	//Scanner in = new Scanner(System.in);
+	Connection conn = null;
+	String driver = "com.mysql.jdbc.Driver";
+	String dbusername = "manager";
+	String dbpassword = "password";	
 	
 	// TODO create a function that opens a connection?
 	// then create functions using the connection to
@@ -29,6 +35,57 @@ public class User {
 		changePW = true;
 		password = t_password;
 		//isAuth = ynAuth;
+	}
+	
+	public User() {
+		username = "";
+		password = "";
+		changePW = false;
+		
+		try {
+			Class.forName(driver);
+			
+			conn = DriverManager.getConnection("jdbc:mysql://localhost/store?&useSSL=false", dbusername, dbpassword);
+		}
+		catch(SQLException ex) {
+			System.out.println("SQLException: " + ex.getMessage());
+			System.out.println("VendorError: " + ex.getErrorCode());
+		}
+		catch(ClassNotFoundException e) {
+			e.printStackTrace();
+		}		
+	}
+	
+	/**
+	 * Modifier - Updates the User obj to contain the user that was entered
+	 * closes connection if all tries to login sucessfully fail
+	 * @param t_username
+	 * @param t_password
+	 */
+	public boolean login(String t_username, String t_password) {
+		PreparedStatement getUser = null;
+		// TODO: continue writing login function
+		// make sure that  the User object is updated
+		try {
+			String queryStatement = "SELECT username, password FROM users WHERE username=? && password=?";
+			getUser = conn.prepareStatement(queryStatement);
+			getUser.setString(1, t_username);
+			getUser.setString(2,t_password);
+			
+			ResultSet singleUser = getUser.executeQuery();
+			
+			if(singleUser.next()) {
+				System.out.println("We found you in the system");
+				return true;
+			}
+			//while(!singleUser.next()) {
+				
+			//}
+		}
+		catch(Exception e) {
+			System.out.println(e);
+			return false;
+		}
 	}
 	
 	/**
@@ -73,5 +130,9 @@ public class User {
 	 */
 	private String getPassword() {
 		return password;
+	}
+	
+	public void logout() {
+		
 	}
 }

@@ -8,6 +8,8 @@ public class Tester{
 	public static void main(String args[]) {
 		Scanner in = new Scanner(System.in);
 		String input;
+		String inputUn;
+		String inputPw;
 		
 		System.out.println(">>>Enter a Command:\n" + "EXIT");
 		input = in.nextLine();
@@ -15,22 +17,25 @@ public class Tester{
 		Store mainStore = new Store();
 		while (!input.equals("EXIT")) {
 			if (input.equals("REGISTER")) {
-				String inputUn;
-				String inputPw;
-				
 				System.out.println(">>>You selected to REGISTER");
 				System.out.println(">>>Enter a Username");
 				inputUn = in.nextLine();
 				System.out.println(">>>Enter a password");
 				inputPw = in.nextLine();
 				
-
 				mainStore.createUser(inputUn, inputPw);
 				
 				// TODO: write the code to handle loginnig in
 			} else if (input.equals("LOGIN")) {
-					System.out.println("You selected to LOGIN");
-					System.out.println("Enter Username");
+					System.out.println(">>>You selected to LOGIN");
+					System.out.println(">>>Enter Username");
+					inputUn = in.nextLine();
+					System.out.println(">>>Enter Password");
+					inputPw = in.nextLine();
+					
+					User loggedUser = new User();
+					loggedUser.login(inputUn, inputPw);
+					
 					// to handle LOGIN maybe consider having either store or user class query database then save user_id for future queries
 					// todo: move get input to top?
 					while (!input.equals("LOGOUT")) {
@@ -52,9 +57,10 @@ public class Tester{
 						input = in.nextLine();
 					}
 			} else {
-					System.out.println("You selected an unrecognized COMMAND");
+					System.out.println(">>>You selected an unrecognized COMMAND");
 			}
 			
+			//if login false then call logout command
 			System.out.println(">>>In the while loop, enter command");
 			System.out.print(">>>");
 			input = in.nextLine();
