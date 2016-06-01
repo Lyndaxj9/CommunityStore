@@ -5,7 +5,7 @@ import java.util.Scanner;
 public class Tester{
 	public static final int DEBUG = 0;
 	
-	public static void main(String args[]){
+	public static void main(String args[]) {
 		Scanner in = new Scanner(System.in);
 		String input;
 		
@@ -24,6 +24,7 @@ public class Tester{
 				System.out.println(">>>Enter a password");
 				inputPw = in.nextLine();
 				
+
 				mainStore.createUser(inputUn, inputPw);
 				
 				// TODO: write the code to handle loginnig in
