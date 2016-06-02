@@ -1,3 +1,10 @@
+/*
+ * CommunityStore
+ *
+ * @author Lynda A.
+ *
+ */
+ 
 package store;
 
 import java.util.Scanner;
@@ -28,13 +35,14 @@ public class Tester{
 				// TODO: write the code to handle loginnig in
 			} else if (input.equals("LOGIN")) {
 					System.out.println(">>>You selected to LOGIN");
-					System.out.println(">>>Enter Username");
+					System.out.print(">>>Enter Username\n>>>");
 					inputUn = in.nextLine();
-					System.out.println(">>>Enter Password");
+					System.out.print(">>>Enter Password\n>>>");
 					inputPw = in.nextLine();
+					boolean loginSuccess;
 					
 					User loggedUser = new User();
-					loggedUser.login(inputUn, inputPw);
+					loginSuccess = loggedUser.login(inputUn, inputPw);
 					
 					// to handle LOGIN maybe consider having either store or user class query database then save user_id for future queries
 					// todo: move get input to top?
@@ -49,12 +57,31 @@ public class Tester{
 								System.out.println("You selected to AUTHORIZE");
 								
 						} else if (input.equals("CHANGEPW")) {
-							
+								String oldpw;
+								String newpw;
+								
+								System.out.println("You selected to CHANGEPW (change your password)");
+								System.out.print("Enter your old password\n>>>");
+								oldpw = in.nextLine();
+								System.out.print("Enter desired new password\n>>>");
+								newpw = in.nextLine();
+								//enter new password again?
+								
+								loggedUser.changePassword(oldpw, newpw);
 						}
 						
-						System.out.println(">>>You are in your account, enter command");
-						System.out.print(">>>");
-						input = in.nextLine();
+						if(loginSuccess) {
+							System.out.println(">>>You are in your account, enter command");
+						  System.out.print(">>>");
+							input = in.nextLine();
+						} else {
+								System.out.println(">>>Too many unsuccessful login attempts\n>>>Account Locked");
+								input = "LOGOUT";
+						}
+
+					}
+					if(input.equals("LOGOUT")){
+						loggedUser=null;
 					}
 			} else {
 					System.out.println(">>>You selected an unrecognized COMMAND");

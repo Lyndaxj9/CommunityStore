@@ -59,13 +59,14 @@ public class User {
 	/**
 	 * Modifier - Updates the User obj to contain the user that was entered
 	 * closes connection if all tries to login sucessfully fail
-	 * @param t_username
-	 * @param t_password
+	 * @param t_username user inputed username
+	 * @param t_password user inputed password
+	 * @return a boolean is return to let the main program know if the login was successful or not
 	 */
 	public boolean login(String t_username, String t_password) {
 		PreparedStatement getUser = null;
-		// TODO: continue writing login function
-		// make sure that  the User object is updated
+		int loginAttempts = 0;
+
 		try {
 			String queryStatement = "SELECT username, password FROM users WHERE username=? && password=?";
 			getUser = conn.prepareStatement(queryStatement);
@@ -73,14 +74,25 @@ public class User {
 			getUser.setString(2,t_password);
 			
 			ResultSet singleUser = getUser.executeQuery();
+			loginAttempts++;
 			
-			if(singleUser.next()) {
-				System.out.println("We found you in the system");
-				return true;
+			while(!singleUser.next() && loginAttempts<=PWTRIES) {
+				System.out.println(">>>Username or password not correct\n>>>Please try again.");
+				System.out.print(">>>Enter the username\n>>>");
+				t_username = input.nextLine();
+				System.out.print(">>>Enter the password.\n>>>");
+				t_password = input.nextLine();
+				getUser.setString(1, t_username);
+				getUser.setString(2, t_password);
+				singleUser = getUser.executeQuery();
+				loginAttempts++;
 			}
-			//while(!singleUser.next()) {
-				
-			//}
+			
+			if(loginAttempts>PWTRIES){return false;}
+			
+			username = t_username;
+			password = t_password;
+			return true;
 		}
 		catch(Exception e) {
 			System.out.println(e);
@@ -124,15 +136,7 @@ public class User {
 		return username;
 	}
 	
-	/**
-	 * Accessor - this function may not be neccessary
-	 * @return returns the User's password
-	 */
-	private String getPassword() {
-		return password;
-	}
-	
 	public void logout() {
-		
+		//close database connection here?
 	}
 }
