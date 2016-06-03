@@ -37,7 +37,7 @@ public class User {
 	public User() {
 		username = "";
 		password = "";
-		changePW = false;
+		changePW = true;
 		
 		try {
 			Class.forName(driver);
@@ -66,7 +66,7 @@ public class User {
 		int loginAttempts = 0;
 
 		try {
-			String queryStatement = "SELECT username, password FROM users WHERE username=? && password=?";
+			String queryStatement = "SELECT username, password, user_id FROM users WHERE username=? && password=?";
 			getUser = conn.prepareStatement(queryStatement);
 			getUser.setString(1, t_username);
 			getUser.setString(2,t_password);
@@ -89,6 +89,7 @@ public class User {
 			
 			if(loginAttempts>PWTRIES){return false;}
 			
+			user_id = singleUser.getInt("user_id");
 			username = t_username;
 			password = t_password;
 			return true;
@@ -118,8 +119,9 @@ public class User {
 	 */
 	public void changePassword (String old_pw, String new_pw) {
 		int wrongPW = 0;
+		boolean pwChanged = false;
 		
-		while (changePW) {
+		while (changePW && !pwChanged) {
 			if (!password.equals(old_pw) && wrongPW<PWTRIES) { //checks if password stored and password entered are the same
 				wrongPW++;
 				System.out.format("The password you entered did not match the one stored. Please try again.\nEnter you old password.\n");
@@ -132,9 +134,31 @@ public class User {
 						System.out.format("New password cannot be equal to previous password stored.\nPlease enter a new password.\n");
 						new_pw = input.nextLine();
 					}
-					password = new_pw;
-					System.out.println("SUCCESS\n");
-					break;
+					
+					PreparedStatement updatePW = null;
+					
+					try {
+						String updateStatement = "UPDATE users SET password=? WHERE user_id=?";
+						updatePW = conn.prepareStatement(updateStatement);
+						updatePW.setString(1, new_pw);
+						updatePW.setInt(2, user_id);
+						
+						updatePW.executeUpdate();
+					}
+					catch(Exception e) {
+						System.out.println(e);
+					}
+					finally {
+						password = new_pw;
+						System.out.println("SUCCESS\n");
+						pwChanged = true;
+						
+						if(updatePW != null) {
+							try {
+								updatePW.close();
+							} catch(Exception c) {/*ignore*/}
+						}					
+					}
 			}
 		}
 	}

@@ -70,7 +70,7 @@ public class Tester{
 						}
 						
 						if(loginSuccess) {
-							System.out.println(">>>You are in your account, enter command\n>>>BROWSE | SELL | AUTHORIZE | CHANGEPW");
+							System.out.println(">>>You are in your account, enter command\n>>>BROWSE | SELL | AUTHORIZE | CHANGEPW | LOGOUT");
 						  System.out.print(">>>");
 							input = in.nextLine();
 						} else {
@@ -87,15 +87,15 @@ public class Tester{
 					System.out.println(">>>You selected an unrecognized COMMAND");
 			}
 			
-			mainStore.close(); //close the database connection in the store object
-			
 			//if login false then call logout command
-			System.out.println(">>>In the while loop, enter command");
+			System.out.println(">>>In the while loop, enter command\n>>>REGISTER | LOGIN | EXIT");
 			System.out.print(">>>");
 			input = in.nextLine();
 			
 		}
 
+		mainStore.close(); //close the database connection in the store object
+					
 		if (DEBUG != 0) {
 			Item tea = new Item("Tea Sampler", 123, "A box of 5 different chai teas to try", 20, false);
 			tea.printItem();
