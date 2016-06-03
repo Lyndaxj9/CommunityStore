@@ -19,9 +19,6 @@ public class User {
 	String dbusername = "manager";
 	String dbpassword = "password";	
 	
-	// TODO create a function that opens a connection?
-	// then create functions using the connection to
-	// then query or update the datebase
 	
 	/** Maybe move this entire function to a store class
 	 * Constructor - Creates a User Object
@@ -65,6 +62,7 @@ public class User {
 	 */
 	public boolean login(String t_username, String t_password) {
 		PreparedStatement getUser = null;
+		ResultSet singleUser = null;
 		int loginAttempts = 0;
 
 		try {
@@ -73,15 +71,16 @@ public class User {
 			getUser.setString(1, t_username);
 			getUser.setString(2,t_password);
 			
-			ResultSet singleUser = getUser.executeQuery();
+			singleUser = getUser.executeQuery();
 			loginAttempts++;
 			
 			while(!singleUser.next() && loginAttempts<=PWTRIES) {
-				System.out.println(">>>Username or password not correct\n>>>Please try again.");
+				System.out.println(">>>Invalid username or password\n>>>Please try again.");
 				System.out.print(">>>Enter the username\n>>>");
 				t_username = input.nextLine();
 				System.out.print(">>>Enter the password.\n>>>");
 				t_password = input.nextLine();
+				
 				getUser.setString(1, t_username);
 				getUser.setString(2, t_password);
 				singleUser = getUser.executeQuery();
@@ -97,6 +96,18 @@ public class User {
 		catch(Exception e) {
 			System.out.println(e);
 			return false;
+		}
+		finally { //should close Statement and ResultSet after use
+			if(getUser != null) {
+				try {
+					getUser.close();
+				} catch(Exception c) {/*ignore*/}
+			}
+			if(singleUser != null) {
+				try {
+					singleUser.close();
+				} catch(Exception c) {/*ignore*/}
+			}
 		}
 	}
 	
@@ -137,6 +148,11 @@ public class User {
 	}
 	
 	public void logout() {
+		if(conn != null) {
+			try {
+				conn.close();
+			} catch(Exception c) {/*ignore*/}
+		}
 		//close database connection here?
 	}
 }

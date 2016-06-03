@@ -18,7 +18,7 @@ public class Tester{
 		String inputUn;
 		String inputPw;
 		
-		System.out.println(">>>Enter a Command:\n" + "EXIT");
+		System.out.print(">>>Enter a Command:\n" + ">>>REGISTER | LOGIN | EXIT\n>>>");
 		input = in.nextLine();
 		
 		Store mainStore = new Store();
@@ -32,7 +32,6 @@ public class Tester{
 				
 				mainStore.createUser(inputUn, inputPw);
 				
-				// TODO: write the code to handle loginnig in
 			} else if (input.equals("LOGIN")) {
 					System.out.println(">>>You selected to LOGIN");
 					System.out.print(">>>Enter Username\n>>>");
@@ -44,8 +43,8 @@ public class Tester{
 					User loggedUser = new User();
 					loginSuccess = loggedUser.login(inputUn, inputPw);
 					
-					// to handle LOGIN maybe consider having either store or user class query database then save user_id for future queries
-					// todo: move get input to top?
+					//while loop to handle commands carried out
+					//while the user is logged in
 					while (!input.equals("LOGOUT")) {
 						if (input.equals("BROWSE")) {
 							System.out.println("You selected to BROWSE");
@@ -71,7 +70,7 @@ public class Tester{
 						}
 						
 						if(loginSuccess) {
-							System.out.println(">>>You are in your account, enter command");
+							System.out.println(">>>You are in your account, enter command\n>>>BROWSE | SELL | AUTHORIZE | CHANGEPW");
 						  System.out.print(">>>");
 							input = in.nextLine();
 						} else {
@@ -81,11 +80,14 @@ public class Tester{
 
 					}
 					if(input.equals("LOGOUT")){
+						loggedUser.logout();
 						loggedUser=null;
 					}
 			} else {
 					System.out.println(">>>You selected an unrecognized COMMAND");
 			}
+			
+			mainStore.close(); //close the database connection in the store object
 			
 			//if login false then call logout command
 			System.out.println(">>>In the while loop, enter command");
@@ -93,22 +95,8 @@ public class Tester{
 			input = in.nextLine();
 			
 		}
-		/* TODO:
-			- Start writing code to create new user into
-		database within while loop asking for different commands
-			- How to test if the username is already in use?
-				= Select from users username = inputedname and if something is returned disallow the username?
-		*/
+
 		if (DEBUG != 0) {
-			User aUser = new User("Lynda", "password", false);
-		
-			System.out.println("Enter your old password");
-			String opw = in.nextLine();
-			System.out.println("Enter your new password");
-			String npw = in.nextLine();
-			aUser.changePassword(opw, npw);
-			System.out.format("User username is: %s\n", aUser.getUsername());
-		
 			Item tea = new Item("Tea Sampler", 123, "A box of 5 different chai teas to try", 20, false);
 			tea.printItem();
 		}
