@@ -87,6 +87,8 @@ public class User {
 				loginAttempts++;
 			}
 			
+			//TODO: create a function (and maybe a supporting class) that automatically changes
+			//the loginAttempts to equal 0
 			if(loginAttempts>PWTRIES){return false;}
 			
 			user_id = singleUser.getInt("user_id");
@@ -128,7 +130,8 @@ public class User {
 				old_pw = input.nextLine();
 			} else if (wrongPW >= PWTRIES) { //if there have been too many attempts prevents user from change password
 					changePW = false;
-					System.out.println("MANYTRIES\n");
+					//TODO: add function that automatically changes changePW to true after a certain amount of time
+					System.out.println(">>>Too many failed attempts to change password.\n>>>You have been blocked from changing your password");
 			} else { 
 					while (password.equals(new_pw)) { //checks if the new password is not the same as the old password
 						System.out.format("New password cannot be equal to previous password stored.\nPlease enter a new password.\n");
@@ -162,6 +165,14 @@ public class User {
 			}
 		}
 	}
+	
+	/**
+	 */
+	//TODO: implement authorizeUser function that allows authorized users to promote other users to become authorizers
+	
+	/**
+	 */
+	//TODO: implement authorizeItem function that allows authorized users to authorize an item to be sold in the store
 	
 	/**
 	 * Accessor
