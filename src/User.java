@@ -64,7 +64,9 @@ public class User {
 		PreparedStatement getUser = null;
 		ResultSet singleUser = null;
 		int loginAttempts = 0;
-
+		//TODO: create a separate function to check if the user has been locked out of their account
+		//check after the username and password have been verified in the table
+		
 		try {
 			String queryStatement = "SELECT username, password, user_id FROM users WHERE username=? && password=?";
 			getUser = conn.prepareStatement(queryStatement);
@@ -87,7 +89,7 @@ public class User {
 				loginAttempts++;
 			}
 			
-			//TODO: create a function (and maybe a supporting class) that automatically changes
+			//TODO: create a function that automatically changes and a column to the users table
 			//the loginAttempts to equal 0
 			if(loginAttempts>PWTRIES){return false;}
 			
@@ -122,6 +124,31 @@ public class User {
 	public void changePassword (String old_pw, String new_pw) {
 		int wrongPW = 0;
 		boolean pwChanged = false;
+		boolean changePW = true;
+		PreparedStatement pwState = null;
+		PreparedStatement lockPW = null;
+		ResultSet canChangePW = null;
+		
+		//checks the database to check if the user is able to change their password at the current time
+		//move to a separate function
+		try {
+			String queryStatement = "SELECT changepw FROM users WHERE user_id = ?";
+			pwState = conn.prepareStatement(queryStatement);
+			pwState.setInt(1, user_id);
+			
+			canChangePW = pwState.executeQuery();
+			canChangePW.next();
+			
+			if(canChangePW.getInt("changepw") == 0){
+				changePW = false;
+			}
+		}
+		catch(Exception e) {
+			System.out.println(e);
+		}
+		finally {
+			//close things
+		}
 		
 		while (changePW && !pwChanged) {
 			if (!password.equals(old_pw) && wrongPW<PWTRIES) { //checks if password stored and password entered are the same
@@ -130,6 +157,20 @@ public class User {
 				old_pw = input.nextLine();
 			} else if (wrongPW >= PWTRIES) { //if there have been too many attempts prevents user from change password
 					changePW = false;
+					
+					try {
+						String updateStatement = "UPDATE users SET changepw=0, timechanged=NOW() WHERE user_id=?";
+						lockPW = conn.prepareStatement(updateStatement);
+						lockPW.setInt(1, user_id);
+						
+						lockPW.executeUpdate();
+					}
+					catch(Exception e) {
+						System.out.println(e);
+					}
+					finally {
+						//close things
+					}
 					//TODO: add function that automatically changes changePW to true after a certain amount of time
 					System.out.println(">>>Too many failed attempts to change password.\n>>>You have been blocked from changing your password");
 			} else { 
@@ -165,6 +206,10 @@ public class User {
 			}
 		}
 	}
+	
+	/**
+	 */
+	//TODO: implement function to check whether user is allowed to change their password before attempting to change the password
 	
 	/**
 	 */

@@ -33,6 +33,7 @@ public class Tester{
 				mainStore.createUser(inputUn, inputPw);
 				
 			} else if (input.equals("LOGIN")) {
+					//TODO: implement checking if user has been locked out of the account due to to many unsuccessful login attemps
 					System.out.println(">>>You selected to LOGIN");
 					System.out.print(">>>Enter Username\n>>>");
 					inputUn = in.nextLine();
@@ -56,6 +57,7 @@ public class Tester{
 								System.out.println("You selected to AUTHORIZE");
 								
 						} else if (input.equals("CHANGEPW")) {
+								//TODO: check if user is able to change their password before obtaining input
 								String oldpw;
 								String newpw;
 								
