@@ -57,18 +57,25 @@ public class Tester{
 								System.out.println("You selected to AUTHORIZE");
 								
 						} else if (input.equals("CHANGEPW")) {
-								//TODO: check if user is able to change their password before obtaining input
-								String oldpw;
-								String newpw;
+								boolean changePW = loggedUser.checkPW();
 								
-								System.out.println("You selected to CHANGEPW (change your password)");
-								System.out.print("Enter your old password\n>>>");
-								oldpw = in.nextLine();
-								System.out.print("Enter desired new password\n>>>");
-								newpw = in.nextLine();
-								//enter new password again?
-								
-								loggedUser.changePassword(oldpw, newpw);
+								if(changePW) {
+									String oldpw;
+									String newpw;
+									
+									System.out.println(">>>You selected to CHANGEPW (change your password)");
+									System.out.print(">>>Enter your old password\n>>>");
+									oldpw = in.nextLine();
+									System.out.print(">>>Enter desired new password\n>>>");
+									newpw = in.nextLine();
+									//todo: enter new password again?
+									//and then test if they are equal to each other
+									
+									loggedUser.changePassword(oldpw, newpw);
+								} else {
+										System.out.println(">>>You have been blocked from changing your password for <certain time>");
+								}
+
 						}
 						
 						if(loginSuccess) {

@@ -125,35 +125,13 @@ public class User {
 		int wrongPW = 0;
 		boolean pwChanged = false;
 		boolean changePW = true;
-		PreparedStatement pwState = null;
+
 		PreparedStatement lockPW = null;
-		ResultSet canChangePW = null;
-		
-		//checks the database to check if the user is able to change their password at the current time
-		//move to a separate function
-		try {
-			String queryStatement = "SELECT changepw FROM users WHERE user_id = ?";
-			pwState = conn.prepareStatement(queryStatement);
-			pwState.setInt(1, user_id);
-			
-			canChangePW = pwState.executeQuery();
-			canChangePW.next();
-			
-			if(canChangePW.getInt("changepw") == 0){
-				changePW = false;
-			}
-		}
-		catch(Exception e) {
-			System.out.println(e);
-		}
-		finally {
-			//close things
-		}
 		
 		while (changePW && !pwChanged) {
 			if (!password.equals(old_pw) && wrongPW<PWTRIES) { //checks if password stored and password entered are the same
 				wrongPW++;
-				System.out.format("The password you entered did not match the one stored. Please try again.\nEnter you old password.\n");
+				System.out.print(">>>The password you entered did not match the one stored. Please try again.\n>>>Enter you old password.\n>>>");
 				old_pw = input.nextLine();
 			} else if (wrongPW >= PWTRIES) { //if there have been too many attempts prevents user from change password
 					changePW = false;
@@ -170,12 +148,17 @@ public class User {
 					}
 					finally {
 						//close things
+						if(lockPW != null) {
+							try {
+								lockPW.close();
+							} catch(Exception c) {/*ignore*/}
+						}
 					}
-					//TODO: add function that automatically changes changePW to true after a certain amount of time
+
 					System.out.println(">>>Too many failed attempts to change password.\n>>>You have been blocked from changing your password");
 			} else { 
 					while (password.equals(new_pw)) { //checks if the new password is not the same as the old password
-						System.out.format("New password cannot be equal to previous password stored.\nPlease enter a new password.\n");
+						System.out.print(">>>New password cannot be equal to previous password stored.\n>>>Please enter a new password.\n>>>");
 						new_pw = input.nextLine();
 					}
 					
@@ -208,8 +191,47 @@ public class User {
 	}
 	
 	/**
+	 * Accessor - Checks database if logged in user is able to change their password or if they have been blocked from doing so
+	 * @return a boolean to state whether or not the user is allowed to change their password
 	 */
-	//TODO: implement function to check whether user is allowed to change their password before attempting to change the password
+	public boolean checkPW() {
+		PreparedStatement pwState = null;
+		ResultSet canChangePW = null;
+		boolean canChange = true;
+				
+		try {
+			String queryStatement = "SELECT changepw FROM users WHERE user_id = ?";
+			pwState = conn.prepareStatement(queryStatement);
+			pwState.setInt(1, user_id);
+			
+			canChangePW = pwState.executeQuery();
+			canChangePW.next();
+			
+			if(canChangePW.getInt("changepw") == 0){
+				canChange = false;
+				//return false;
+			}
+		}
+		catch(Exception e) {
+			System.out.println(e);
+		}
+		finally {
+			if(pwState != null) {
+				try {
+					pwState.close();
+				} catch(Exception c) {/*ignore*/}
+			}
+			
+			if(canChangePW != null) {
+				try {
+					canChangePW.close();
+				} catch(Exception c) {/*ignore*/}
+			}
+		}
+		
+		return canChange;
+	}
+	
 	
 	/**
 	 */
